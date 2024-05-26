@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    .timer {
+      margin: 20px 0;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Countdown Timer</h1>
+  <div id="timers"></div>
+
+  <script>
+    const yourGroup = 'group1'; // Modify this to change your group
+    const initialTimes = {
+      group1: 300, // 5 minutes in seconds
+      group2: 600, // 10 minutes in seconds
+      group3: 900, // 15 minutes in seconds
+    };
+
+    const timers = {};
+
+    function startTimer(groupName, initialTime) {
+      timers[groupName] = initialTime;
+      updateTimerDisplay(groupName);
+
+      setInterval(() => {
+        if (timers[groupName] > 0) {
+          timers[groupName] -= 1;
+          updateTimerDisplay(groupName);
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(groupName) {
+      const timerElement = document.getElementById(`timer-${groupName}`);
+      const timeLeft = timers[groupName];
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function addTime(groupName, seconds) {
+      timers[groupName] += seconds;
+      updateTimerDisplay(groupName);
+    }
+
+    function removeTime(groupName, seconds) {
+      timers[groupName] = Math.max(timers[groupName] - seconds, 0);
+      updateTimerDisplay(groupName);
+    }
+
+    function createTimerElement(groupName) {
+      const timerContainer = document.createElement('div');
+      timerContainer.className = 'timer';
+
+      const timerTitle = document.createElement('h2');
+      timerTitle.textContent = groupName;
+      timerContainer.appendChild(timerTitle);
+
+      const timerDisplay = document.createElement('div');
+      timerDisplay.id = `timer-${groupName}`;
+      timerDisplay.textContent = '0:00';
+      timerContainer.appendChild(timerDisplay);
+
+      if (groupName === yourGroup) {
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'buttons';
+
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Add 1 min';
+        addButton.onclick = () => addTime(groupName, 60);
+        buttonsContainer.appendChild(addButton);
+
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove 1 min';
+        removeButton.onclick = () => removeTime(groupName, 60);
+        buttonsContainer.appendChild(removeButton);
+
+        timerContainer.appendChild(buttonsContainer);
+      }
+
+      document.getElementById('timers').appendChild(timerContainer);
+    }
+
+    Object.keys(initialTimes).forEach(groupName => {
+      createTimerElement(groupName);
+      startTimer(groupName, initialTimes[groupName]);
+    });
+  </script>
+</body>
+</html>
